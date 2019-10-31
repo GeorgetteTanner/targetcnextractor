@@ -17,27 +17,31 @@
 import argparse
 
 parser = argparse.ArgumentParser(description="Get the total, or allele specific, copy number of the mid-point of target regions from a copy number profile")
-parser.add_argument('-t', '--targets', required=True, dest='targets', help='Target regions BED file (with header in first line)')
-parser.add_argument('-c', '--cnfile', dest='cnfile', required=True, help='Copy number file (with header in first line) in format:chromosome \t start \t end \t total cn \t allele A cn (optional) \t allele B cn (optional)')
+parser.add_argument('-t', '--targets', required=True, dest='targets', help='Target regions BED file')
+parser.add_argument('-c', '--cnfile', dest='cnfile', required=True, help='Copy number file in format:chromosome \t start \t end \t total cn \t allele A cn (optional) \t allele B cn (optional)')
 parser.add_argument('-o', '--output', dest='output', required=True, help='Output file directory and name')
 
 args = parser.parse_args()
 
 cndata={}
 with open(args.cnfile,'r') as file:
-    file.readline()
     for line in file:
-        l=line.split()
-        if l[0] not in cndata:
-            cndata[l[0]]=[]
-        cndata[l[0]].append(l[1:])
+        if line.startswith('#'):
+            pass
+        else:
+            l=line.split()
+            if l[0] not in cndata:
+                cndata[l[0]]=[]
+            cndata[l[0]].append(l[1:])
 
 tdata=[]
 with open(args.targets,'r') as file:
-    next(file)
     for line in file:
-        l=line.split()
-        tdata.append([l[0],round((int(l[2])-int(l[1]))/2)+int(l[1]),0])
+        if line.startswith('#'):
+            pass
+        else:
+            l=line.split()
+            tdata.append([l[0],round((int(l[2])-int(l[1]))/2)+int(l[1]),0])
 
 tcns=[]
 for t in tdata:
