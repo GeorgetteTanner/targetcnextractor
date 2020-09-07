@@ -44,12 +44,38 @@ with open(args.targets,'r') as file:
             tdata.append([l[0],round((int(l[2])-int(l[1]))/2)+int(l[1]),0])
 
 tcns=[]
+#===for when overlapping copy numbers exist===========================================================================
+# for t in tdata:
+#     cn=''
+#     added='n'
+#     if t[0] in cndata:
+#         for region in cndata[t[0]]:
+#             if int(t[1])>=int(region[0]) and int(t[1])<=int(region[1]):
+#                 if cn=='':                
+#                     cn=region[2:]
+#                 else:
+#                     #take average if multiple copy numbers exist
+#                     for i in range(len(cn)):
+#                         cn[i]=(cn[i]+region[i+2])/2    
+#     if cn=='': 
+#         tcns.append([t[0],t[1],[2,1,1]])
+#     else:    
+#         tcns.append([t[0],t[1],cn[:]])
+#==============================================================================
+           
 for t in tdata:
+    cn=''
     if t[0] in cndata:
         for region in cndata[t[0]]:
             if int(t[1])>=int(region[0]) and int(t[1])<=int(region[1]):
-                tcns.append([t[0],t[1],region[2:]])
-                break
+                cn=region[2:]
+                break  
+        if cn=='': 
+            tcns.append([t[0],t[1],[2,1,1]])
+        else:    
+            tcns.append([t[0],t[1],cn[:]])           
+              
+          
 
 with open(args.output,'w+') as file:
     file.write('Chromosome\tPosition\tCopy Number\tA Allele\tB Allele\n')
